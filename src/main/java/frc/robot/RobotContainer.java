@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.swervedrive.drivebase.Aim;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -119,6 +121,18 @@ public class RobotContainer
 
     //Put the autoChooser on the SmartDashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+
+    // Init port forwarding for limelight
+    PortForwarder.add(5801, "172.29.0.1", 5801);
+    PortForwarder.add(5802, "172.29.0.1", 5802);
+    PortForwarder.add(5803, "172.29.0.1", 5803);
+    PortForwarder.add(5804, "172.29.0.1", 5804);
+    PortForwarder.add(5805, "172.29.0.1", 5805);
+    PortForwarder.add(5806, "172.29.0.1", 5806);
+    PortForwarder.add(5807, "172.29.0.1", 5807);
+    PortForwarder.add(5808, "172.29.0.1", 5808);
+    PortForwarder.add(5809, "172.29.0.1", 5809);
   }
 
   /**
@@ -139,6 +153,8 @@ public class RobotContainer
     Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
     Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
+
+    Command aimBot = new Aim(drivebase);
 
     if (RobotBase.isSimulation())
     {
@@ -168,6 +184,7 @@ public class RobotContainer
       driverXbox.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
       driverXbox.button(2).whileTrue(Commands.runEnd(() -> driveDirectAngleKeyboard.driveToPoseEnabled(true),
                                                      () -> driveDirectAngleKeyboard.driveToPoseEnabled(false)));
+      driverXbox.y().onTrue(aimBot);
 
 //      driverXbox.b().whileTrue(
 //          drivebase.driveToPose(
@@ -210,4 +227,5 @@ public class RobotContainer
   {
     drivebase.setMotorBrake(brake);
   }
+
 }

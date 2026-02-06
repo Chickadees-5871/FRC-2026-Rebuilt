@@ -663,4 +663,12 @@ public class SwerveSubsystem extends SubsystemBase
   {
     return swerveDrive;
   }
+
+  /**
+   * Checks if robot is moving
+   */
+  public boolean getIsDriving(){
+    ChassisSpeeds cs = getRobotVelocity();
+    return cs.vxMetersPerSecond > 0.01 || cs.vyMetersPerSecond > 0.01 || cs.omegaRadiansPerSecond > 0.1;
+  }
 }
