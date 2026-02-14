@@ -8,13 +8,13 @@
   },
   "conversionFactors": {
     "angle": {
-      "gearRatio": 6,
-      "factor": 1
+      "gearRatio": 12.11,
+      "factor": 29.72
     },
     "drive": {
       "diameter": 3.5,
-      "gearRatio": 6,
-      "factor": 1
+      "gearRatio": 7.85,
+      "factor": 0.0406
     }
   },
   "rampRate": {
