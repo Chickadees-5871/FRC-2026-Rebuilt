@@ -18,6 +18,7 @@ import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -56,6 +57,10 @@ public class SwerveSubsystem extends SubsystemBase
    */
   private final SwerveDrive swerveDrive;
 
+  SlewRateLimiter xLimiter = new SlewRateLimiter(0.53);
+  SlewRateLimiter yLimiter = new SlewRateLimiter(0.53);
+  SlewRateLimiter angleLimiter = new SlewRateLimiter(0.53);
+
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
    *
@@ -75,6 +80,7 @@ public class SwerveSubsystem extends SubsystemBase
     try
     {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.MAX_SPEED, startingPose);
+      //swerveDrive.swerveController.addSlewRateLimiters(xLimiter, yLimiter, angleLimiter);
       // Alternative method if you don't want to supply the conversion factor via JSON files.
       // swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor);
     } catch (Exception e)
@@ -353,12 +359,16 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX)
   {
+    double x = xLimiter.calculate(translationX.getAsDouble());
+    double y = xLimiter.calculate(translationY.getAsDouble());
+    double a = xLimiter.calculate(angularRotationX.getAsDouble());
+
     return run(() -> {
       // Make the robot move
       swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
-                            translationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity(),
-                            translationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity()), 0.8),
-                        Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumChassisAngularVelocity(),
+                            x * swerveDrive.getMaximumChassisVelocity(),
+                            y * swerveDrive.getMaximumChassisVelocity()), 0.8),
+                        Math.pow(a, 3) * swerveDrive.getMaximumChassisAngularVelocity(),
                         true,
                         false);
     });
