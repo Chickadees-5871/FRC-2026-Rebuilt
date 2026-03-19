@@ -26,6 +26,8 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.swervedrive.drivebase.Aim;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.subsystems.turret.TurretSubsystem;
+
 import java.io.File;
 import swervelib.SwerveInputStream;
 
@@ -45,6 +47,7 @@ public class RobotContainer
                                                                                 "swerve/neo"));
 
   private final IntakeSubsystem       intakeSubsystem = new IntakeSubsystem();
+  private final TurretSubsystem       turretSubsystem = new TurretSubsystem();
 
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
   private final SendableChooser<Command> autoChooser;
@@ -196,11 +199,7 @@ public class RobotContainer
       // GUNNER !!
       //
       gunnerXbox.leftTrigger(0.5).whileTrue(intakeSubsystem.startIntakeCommand()).whileFalse(intakeSubsystem.stopIntakeCommand());
-
-//      driverXbox.b().whileTrue(
-//          drivebase.driveToPose(
-//              new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-//                              );
+      gunnerXbox.a().toggleOnTrue(intakeSubsystem.toggleReverseCommand());
 
     }
     if (DriverStation.isTest())
