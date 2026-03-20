@@ -10,8 +10,8 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.*;
 
 public class IndexingSubsystem extends SubsystemBase{
-    private final SparkMax intakeMotorOne = new SparkMax(9, MotorType.kBrushless);
-    private final SparkMax intakeMotorTwo = new SparkMax(10, MotorType.kBrushless);
+    private final SparkMax indexingMotorMain = new SparkMax(9, MotorType.kBrushless);
+    private final SparkMax indexingMotorTurret = new SparkMax(10, MotorType.kBrushless);
 
     private int reverse = -1;
     private double power = 0.2;
@@ -21,19 +21,19 @@ public class IndexingSubsystem extends SubsystemBase{
     
         config.follow(9);
 
-        intakeMotorTwo.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);    
-        intakeMotorOne.configure(new SparkMaxConfig(), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        indexingMotorTurret.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);    
+        indexingMotorMain.configure(new SparkMaxConfig(), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public Command startIntakeCommand() {
         return new RunCommand(
-            () -> intakeMotorOne.set(power * reverse), 
+            () -> indexingMotorMain.set(power * reverse), 
             this
-        ).finallyDo(() -> intakeMotorOne.set(0));
+        ).finallyDo(() -> indexingMotorMain.set(0));
     }
 
     public Command stopIntakeCommand() {
-        return new InstantCommand(() -> intakeMotorOne.set(0), this);
+        return new InstantCommand(() -> indexingMotorMain.set(0), this);
     }
 
     public Command toggleReverseCommand() {
