@@ -10,31 +10,31 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.*;
 
 public class IndexingSubsystem extends SubsystemBase{
-    private final SparkMax indexingMotorMain = new SparkMax(9, MotorType.kBrushless);
-    private final SparkMax indexingMotorTurret = new SparkMax(10, MotorType.kBrushless);
+    private final SparkMax motorMain = new SparkMax(9, MotorType.kBrushless);
+    private final SparkMax motorTurret = new SparkMax(10, MotorType.kBrushless);
 
     private int reverse = -1;
-    private boolean indexingMotorTurretDirection = false;
     private double power = 0.2;
+    private boolean indexingMotorTurretDirection = false;
     
     public IndexingSubsystem() {
         SparkMaxConfig config = new SparkMaxConfig();
     
         config.follow(9, indexingMotorTurretDirection);
 
-        indexingMotorTurret.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);    
-        indexingMotorMain.configure(new SparkMaxConfig(), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        motorTurret.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);    
+        motorMain.configure(new SparkMaxConfig(), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    public Command startIntakeCommand() {
+    public Command startCommand() {
         return new RunCommand(
-            () -> indexingMotorMain.set(power * reverse), 
+            () -> motorMain.set(power * reverse), 
             this
-        ).finallyDo(() -> indexingMotorMain.set(0));
+        ).finallyDo(() -> motorMain.set(0));
     }
 
-    public Command stopIntakeCommand() {
-        return new InstantCommand(() -> indexingMotorMain.set(0), this);
+    public Command stopCommand() {
+        return new InstantCommand(() -> motorMain.set(0), this);
     }
 
     public Command toggleReverseCommand() {

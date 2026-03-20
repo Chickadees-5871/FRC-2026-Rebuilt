@@ -215,7 +215,7 @@ public class RobotContainer
     // GUNNER !!
     //
     // whileFalse is redundant if using runEnd in subsystem, but harmless to keep.
-    gunnerXbox.leftTrigger(0.5).whileTrue(intakeSubsystem.startIntakeCommand()).whileFalse(intakeSubsystem.stopIntakeCommand());
+    gunnerXbox.leftTrigger(0.5).whileTrue(intakeSubsystem.startCommand()).whileFalse(intakeSubsystem.stopCommand());
     gunnerXbox.a().onTrue(intakeSubsystem.toggleReverseCommand());
 
   }
