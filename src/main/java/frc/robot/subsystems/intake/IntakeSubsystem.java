@@ -16,8 +16,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private final SparkMax motorExtendOne = new SparkMax(16, MotorType.kBrushless);
     private final SparkMax motorExtendTwo = new SparkMax(17, MotorType.kBrushless);
 
-    private double power = 0.2;
-    private int reverse = -1;
+    private double power = 0.9;
+    private int reverse = 1;
 
     public IntakeSubsystem() {
         SparkMaxConfig config = new SparkMaxConfig();
