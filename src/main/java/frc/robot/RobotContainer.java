@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.swervedrive.drivebase.Aim;
-import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.indexing.IndexingSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 
@@ -46,7 +46,7 @@ public class RobotContainer
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/neo"));
 
-  private final IntakeSubsystem       intakeSubsystem = new IntakeSubsystem();
+  private final IndexingSubsystem       intakeSubsystem = new IndexingSubsystem();
   private final TurretSubsystem       turretSubsystem = new TurretSubsystem();
 
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
@@ -192,15 +192,6 @@ public class RobotContainer
       driverXbox.button(2).whileTrue(Commands.runEnd(() -> driveDirectAngleKeyboard.driveToPoseEnabled(true),
                                                      () -> driveDirectAngleKeyboard.driveToPoseEnabled(false)));
       driverXbox.y().onTrue(aimBot);
-
-
-
-      //
-      // GUNNER !!
-      //
-      gunnerXbox.leftTrigger(0.5).whileTrue(intakeSubsystem.startIntakeCommand()).whileFalse(intakeSubsystem.stopIntakeCommand());
-      gunnerXbox.a().toggleOnTrue(intakeSubsystem.toggleReverseCommand());
-
     }
     if (DriverStation.isTest())
     {
@@ -219,6 +210,13 @@ public class RobotContainer
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
     }
+
+    //
+    // GUNNER !!
+    //
+    // whileFalse is redundant if using runEnd in subsystem, but harmless to keep.
+    gunnerXbox.leftTrigger(0.5).whileTrue(intakeSubsystem.startIntakeCommand()).whileFalse(intakeSubsystem.stopIntakeCommand());
+    gunnerXbox.a().onTrue(intakeSubsystem.toggleReverseCommand());
 
   }
 
