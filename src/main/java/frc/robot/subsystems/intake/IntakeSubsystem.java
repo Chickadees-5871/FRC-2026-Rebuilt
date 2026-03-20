@@ -12,9 +12,9 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeSubsystem extends SubsystemBase {
-    private final SparkMax motorMain = new SparkMax(13 ,MotorType.kBrushless);
-    private final SparkMax motorExtendOne = new SparkMax(11, MotorType.kBrushless);
-    private final SparkMax motorExtendTwo = new SparkMax(12, MotorType.kBrushless);
+    private final SparkMax motorMain = new SparkMax(15 ,MotorType.kBrushless);
+    private final SparkMax motorExtendOne = new SparkMax(16, MotorType.kBrushless);
+    private final SparkMax motorExtendTwo = new SparkMax(17, MotorType.kBrushless);
 
     private double power = 0.2;
     private int reverse = -1;
