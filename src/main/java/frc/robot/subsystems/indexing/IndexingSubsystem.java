@@ -14,13 +14,13 @@ public class IndexingSubsystem extends SubsystemBase{
     private final SparkMax motorTurret = new SparkMax(10, MotorType.kBrushless);
 
     private int reverse = -1;
-    private double power = 0.2;
+    private double power = 0.4;
     private boolean indexingMotorTurretDirection = false;
     
     public IndexingSubsystem() {
         SparkMaxConfig config = new SparkMaxConfig();
     
-        config.follow(9, indexingMotorTurretDirection);
+        // config.follow(9, indexingMotorTurretDirection);
 
         motorTurret.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);    
         motorMain.configure(new SparkMaxConfig(), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
