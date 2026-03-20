@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.swervedrive.drivebase.Aim;
 import frc.robot.subsystems.indexing.IndexingSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.turret.TurretSubsystem;
 
@@ -46,8 +47,10 @@ public class RobotContainer
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/neo"));
 
-  private final IndexingSubsystem       intakeSubsystem = new IndexingSubsystem();
+  private final IndexingSubsystem       indexingSubsystem = new IndexingSubsystem();
   private final TurretSubsystem       turretSubsystem = new TurretSubsystem();
+  private final IntakeSubsystem       intakeSubsystem = new IntakeSubsystem();
+
 
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
   private final SendableChooser<Command> autoChooser;
@@ -215,8 +218,10 @@ public class RobotContainer
     // GUNNER !!
     //
     // whileFalse is redundant if using runEnd in subsystem, but harmless to keep.
-    gunnerXbox.leftTrigger(0.5).whileTrue(intakeSubsystem.startCommand()).whileFalse(intakeSubsystem.stopCommand());
-    gunnerXbox.a().onTrue(intakeSubsystem.toggleReverseCommand());
+    gunnerXbox.leftTrigger(0.5).whileTrue(indexingSubsystem.startCommand()).whileFalse(indexingSubsystem.stopCommand());
+    gunnerXbox.rightTrigger(0.5).whileTrue(intakeSubsystem.startCommand()).whileFalse(intakeSubsystem.stopCommand());
+    gunnerXbox.a().onTrue(indexingSubsystem.toggleReverseCommand());
+    gunnerXbox.b().onTrue(intakeSubsystem.toggleReverseCommand());
 
   }
 
