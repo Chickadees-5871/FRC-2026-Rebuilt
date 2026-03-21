@@ -34,7 +34,7 @@ public class IntakeSubsystem extends SubsystemBase {
         return new RunCommand(
             () -> motorMain.set(power * reverse), 
             this
-        ).finallyDo(() -> motorMain.set(0));
+        );
     }
 
     public Command stopCommand() {
@@ -43,15 +43,19 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public Command toggleReverseCommand() {
         return new InstantCommand(() -> {
+            motorMain.set(0);
             reverse *= -1;
+            motorMain.set(power * reverse);
         });
     }
 
     // TODO: This function
-    public Command extendCommand() {
+    public Command  extendCommand() {
         return new RunCommand(
             () -> {
+                motorExtendOne.set(0.1);
                 System.out.println("Extending");
-            }, this);
+            }, this).withTimeout(2.0) 
+            .finallyDo(() -> motorExtendOne.set(0));
     }
 }

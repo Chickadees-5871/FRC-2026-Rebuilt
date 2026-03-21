@@ -116,7 +116,8 @@ public class RobotContainer
    */
   public RobotContainer()
   {
-    liftSubsystem.setDefaultCommand(liftSubsystem.holdDownCommand());
+    //liftSubsystem.setDefaultCommand(liftSubsystem.holdDownCommand());
+    indexingSubsystem.setDefaultCommand(indexingSubsystem.startCommand());
     // Configure the trigger bindings
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
@@ -221,8 +222,10 @@ public class RobotContainer
     //
     // GUNNER !!
     //
-    gunnerXbox.leftTrigger(0.5).whileTrue(indexingSubsystem.startCommand()).whileFalse(indexingSubsystem.stopCommand());
+    gunnerXbox.leftTrigger(0.5).whileTrue(indexingSubsystem.startCommand());
     gunnerXbox.rightTrigger(0.5).whileTrue(intakeSubsystem.startCommand()).whileFalse(intakeSubsystem.stopCommand());
+    gunnerXbox.leftBumper().onTrue(intakeSubsystem.extendCommand());
+    
     gunnerXbox.a().onTrue(indexingSubsystem.toggleReverseCommand());
     gunnerXbox.b().onTrue(intakeSubsystem.toggleReverseCommand());
     gunnerXbox.y().onTrue(liftSubsystem.extendCommand());

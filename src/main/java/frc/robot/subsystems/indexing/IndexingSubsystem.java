@@ -15,7 +15,6 @@ public class IndexingSubsystem extends SubsystemBase{
 
     private int reverse = -1;
     private double power = 0.4;
-    private boolean indexingMotorTurretDirection = false;
     
     public IndexingSubsystem() {
         SparkMaxConfig config = new SparkMaxConfig();
@@ -29,17 +28,19 @@ public class IndexingSubsystem extends SubsystemBase{
     public Command startCommand() {
         return new RunCommand(
             () -> motorMain.set(power * reverse), 
-            this
-        ).finallyDo(() -> motorMain.set(0));
+            this 
+        );
     }
 
-    public Command stopCommand() {
-        return new InstantCommand(() -> motorMain.set(0), this);
-    }
+    // public Command stopCommand() {
+    //     return new InstantCommand(() -> motorMain.set(0), this);
+    // }
 
     public Command toggleReverseCommand() {
         return new InstantCommand(() -> {
             reverse *= -1;
         });
     }
+
+
 }
