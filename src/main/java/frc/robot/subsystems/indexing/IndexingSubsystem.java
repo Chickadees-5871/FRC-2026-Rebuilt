@@ -19,7 +19,7 @@ public class IndexingSubsystem extends SubsystemBase{
     public IndexingSubsystem() {
         SparkMaxConfig config = new SparkMaxConfig();
     
-        // config.follow(9, indexingMotorTurretDirection);
+        config.follow(9);
 
         motorTurret.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);    
         motorMain.configure(new SparkMaxConfig(), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -32,9 +32,9 @@ public class IndexingSubsystem extends SubsystemBase{
         );
     }
 
-    // public Command stopCommand() {
-    //     return new InstantCommand(() -> motorMain.set(0), this);
-    // }
+    public Command stopCommand() {
+        return new InstantCommand(() -> motorMain.set(0), this);
+    }
 
     public Command toggleReverseCommand() {
         return new InstantCommand(() -> {

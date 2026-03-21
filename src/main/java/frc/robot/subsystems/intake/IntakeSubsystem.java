@@ -16,13 +16,13 @@ public class IntakeSubsystem extends SubsystemBase {
     private final SparkMax motorExtendOne = new SparkMax(16, MotorType.kBrushless);
     private final SparkMax motorExtendTwo = new SparkMax(17, MotorType.kBrushless);
 
-    private double power = 0.9;
+    private double power = 0.41;
     private int reverse = 1;
 
     public IntakeSubsystem() {
         SparkMaxConfig config = new SparkMaxConfig();
     
-        config.follow(11, true);
+        config.follow(16, true);
 
         motorExtendTwo.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -53,7 +53,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public Command  extendCommand() {
         return new RunCommand(
             () -> {
-                motorExtendOne.set(0.1);
+                motorExtendOne.set(-0.5);
                 System.out.println("Extending");
             }, this).withTimeout(2.0) 
             .finallyDo(() -> motorExtendOne.set(0));
