@@ -11,13 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 
-/**
- * The VM is configured to automatically run this class, and to call the functions corresponding to each mode, as
- * described in the TimedRobot documentation. If you change the name of this class or the package after creating this
- * project, you must also update the build.gradle file in the project.
- */
 public class Robot extends TimedRobot
 {
 
@@ -27,10 +21,14 @@ public class Robot extends TimedRobot
   private RobotContainer m_robotContainer;
   private AddressableLED led = new AddressableLED(9);
   private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(114);
-  private double perd;
-  private final double hertz = 1/60;
 
   private Timer disabledTimer;
+
+  private double ledTime = 0;
+  private final double LED_DT = 1.0 / 60.0;
+
+  private double[] m_blobPositions = {0.0, 23.0, 46.0, 69.0, 92.0};
+  private double[] m_blobSpeeds    = {0.22, -0.17, 0.31, -0.26, 0.13};
 
   public Robot()
   {
@@ -42,18 +40,11 @@ public class Robot extends TimedRobot
     return instance;
   }
 
-  /**
-   * This function is run when the robot is first started up and should be used for any initialization code.
-   */
   @Override
   public void robotInit()
   {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
-    // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
-    // immediately when disabled, but then also let it be pushed more 
     disabledTimer = new Timer();
 
     led.setLength(ledBuffer.getLength());
@@ -66,33 +57,31 @@ public class Robot extends TimedRobot
     }
   }
 
-  /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics that you want ran
-   * during disabled, autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-   * SmartDashboard integrated updating.
-   */
   @Override
   public void robotPeriodic()
   {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
-    perd += hertz * 100;
-    for(int i = 0; i < ledBuffer.getLength(); i++){
-      ledBuffer.setRGB(i, (int)perd % 255, 122, (i / 2) % 255);
-    }
     
-    led.setData(ledBuffer);
+    updateLedsAuto();
   }
 
-  /**
-   * This function is called once each time the robot enters Disabled mode.
-   */
+  private void updateLedsAuto() {
+    ledTime += LED_DT;
+
+    if (DriverStation.isDisabled()) {
+      updateLedsDisabled();
+    } else {
+      boolean isRed = DriverStation.getAlliance()
+          .map(a -> a == DriverStation.Alliance.Red)
+          .orElse(false);
+      updateLedsEnabled(isRed);
+    }
+  }
+
+  private int clamp(int v) {
+    return Math.max(0, Math.min(255, v));
+  }
+
   @Override
   public void disabledInit()
   {
@@ -100,7 +89,7 @@ public class Robot extends TimedRobot
     disabledTimer.reset();
     disabledTimer.start();
   }
-  
+
   @Override
   public void disabledPeriodic()
   {
@@ -112,28 +101,20 @@ public class Robot extends TimedRobot
     }
   }
 
-  /**
-   * This autonomous runs the autonomous command selected by your {@link RobotContainer} class.
-   */
   @Override
   public void autonomousInit()
   {
     m_robotContainer.setMotorBrake(true);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    //Print the selected autonomous command upon autonomous init
     System.out.println("Auto selected: " + m_autonomousCommand);
 
-    // schedule the autonomous command selected in the autoChooser
     if (m_autonomousCommand != null)
     {
       m_autonomousCommand.schedule();
     }
   }
 
-  /**
-   * This function is called periodically during autonomous.
-   */
   @Override
   public void autonomousPeriodic()
   {
@@ -142,10 +123,6 @@ public class Robot extends TimedRobot
   @Override
   public void teleopInit()
   {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
     if (m_autonomousCommand != null)
     {
       m_autonomousCommand.cancel();
@@ -155,9 +132,6 @@ public class Robot extends TimedRobot
     }
   }
 
-  /**
-   * This function is called periodically during operator control.
-   */
   @Override
   public void teleopPeriodic()
   {
@@ -166,31 +140,59 @@ public class Robot extends TimedRobot
   @Override
   public void testInit()
   {
-    // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
   }
 
-  /**
-   * This function is called periodically during test mode.
-   */
   @Override
   public void testPeriodic()
   {
   }
 
-  /**
-   * This function is called once when the robot is first started up.
-   */
   @Override
   public void simulationInit()
   {
   }
 
-  /**
-   * This function is called periodically whilst in simulation.
-   */
   @Override
   public void simulationPeriodic()
   {
+  }
+  private void updateLedsEnabled(boolean isRed) {
+    int length = ledBuffer.getLength();
+    for (int i = 0; i < length; i++) {
+      // Calculate normalized distance from center (0.0 at center, 1.0 at ends)
+      double centerDist = Math.abs(i - (length / 2.0)) / (length / 2.0);
+      
+      int r, g, b;
+      if (isRed) {
+        // Gradient from Light Red (center) to Deep Red (ends)
+        r = (int) (255 - (centerDist * 155)); // 255 at center, 100 at ends
+        g = 0;
+        b = 0;
+      } else {
+        // Gradient from Light Blue (center) to Deep Blue (ends)
+        r = 0;
+        g = (int) (centerDist * 50); // Slight green tint at ends for "deep" look
+        b = (int) (255 - (centerDist * 155)); // 255 at center, 100 at ends
+      }
+      ledBuffer.setRGB(i, clamp(r), clamp(g), clamp(b));
+    }
+    led.setData(ledBuffer);
+  }
+
+  private void updateLedsDisabled() {
+    int length = ledBuffer.getLength();
+    for (int i = 0; i < length; i++) {
+      // Calculate normalized distance from center (0.0 at center, 1.0 at ends)
+      double centerDist = Math.abs(i - (length / 2.0)) / (length / 2.0);
+
+      // Gradient from Light Orange (center) to Deep Orange/Brown (ends)
+      int r = (int) (255 - (centerDist * 155)); // 255 at center, 100 at ends
+      int g = (int) (140 - (centerDist * 100)); // 140 at center, 40 at ends
+      int b = 0;
+
+      ledBuffer.setRGB(i, clamp(r), clamp(g), clamp(b));
+    }
+    led.setData(ledBuffer);
   }
 }
