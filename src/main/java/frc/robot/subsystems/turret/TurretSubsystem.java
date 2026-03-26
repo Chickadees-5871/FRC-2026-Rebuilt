@@ -40,7 +40,7 @@ public class TurretSubsystem extends SubsystemBase{
 
     public Command shoot(){
         return new RunCommand(() -> {
-            uptakeMotor.set(1.0);
+            uptakeMotor.set(-1.0);
         }).finallyDo(() -> uptakeMotor.set(0.0));
     }
 
