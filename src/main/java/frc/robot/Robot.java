@@ -20,7 +20,7 @@ public class Robot extends TimedRobot
 
   private RobotContainer m_robotContainer;
   private AddressableLED led = new AddressableLED(9);
-  private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(114);
+  private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(29);
 
   private Timer disabledTimer;
 
