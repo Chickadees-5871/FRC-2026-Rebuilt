@@ -86,11 +86,8 @@ public class Robot extends TimedRobot
     for(int i = 0; i < ledBuffer.getLength(); i++){
       ledBuffer.setRGB(i, (int)perd % 255, 122, (i / 2) % 255);
     }
+    
     led.setData(ledBuffer);
-    System.out.println("r: ");
-    System.out.print(perd % 255);
-    System.out.print(", g: 122 b: 0 - ");
-    System.out.print(Math.min((ledBuffer.getLength() / 2), 255.0));
   }
 
   /**

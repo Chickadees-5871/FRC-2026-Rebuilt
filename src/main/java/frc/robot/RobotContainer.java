@@ -164,7 +164,7 @@ public class RobotContainer
    * named factories in {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
    * {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
    * controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
-   */
+   */ 
   private void configureBindings()
   {
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
@@ -227,15 +227,15 @@ public class RobotContainer
       driverXbox.rightBumper().onTrue(Commands.none());
     }
 
+    driverXbox.a().onTrue(aimBot);
+
     //
     // GUNNER !!
     //
     gunnerXbox.leftTrigger(0.5).whileTrue(intakeSubsystem.startCommand()).whileFalse(intakeSubsystem.stopCommand());
     gunnerXbox.rightTrigger(0.2).whileTrue(turretSubsystem.shoot());
     gunnerXbox.rightTrigger(0.2).whileTrue(indexingSubsystem.startCommand());
-    gunnerXbox.rightTrigger(0.2).whileTrue(intakeSubsystem.startCommand());
-
-    
+    gunnerXbox.rightTrigger(0.2).whileTrue(intakeSubsystem.startCommand());    
     gunnerXbox.leftBumper().onTrue(intakeSubsystem.extendCommand());
     
 
