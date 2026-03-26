@@ -11,34 +11,38 @@ import edu.wpi.first.wpilibj2.command.*;
 
 public class IndexingSubsystem extends SubsystemBase{
     private final SparkMax motorMain = new SparkMax(9, MotorType.kBrushless);
-    private final SparkMax motorTurret = new SparkMax(10, MotorType.kBrushless);
+    
 
     private int reverse = -1;
-    private double power = 0.4;
+    private double power = 0.5;
     
     public IndexingSubsystem() {
         SparkMaxConfig config = new SparkMaxConfig();
     
-        config.follow(9);
+        //config.follow(9);
 
-        motorTurret.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);    
         motorMain.configure(new SparkMaxConfig(), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public Command startCommand() {
-        return new RunCommand(
-            () -> motorMain.set(power * reverse), 
-            this 
-        );
+        return new InstantCommand(() -> {
+            motorMain.set(power * reverse);
+        }, this);
     }
 
     public Command stopCommand() {
-        return new InstantCommand(() -> motorMain.set(0), this);
+        return new InstantCommand(() -> {
+            motorMain.set(0);
+        }, this);
     }
 
     public Command toggleReverseCommand() {
-        return new InstantCommand(() -> {
+        return new RunCommand(() -> {
             reverse *= -1;
+            motorMain.set(reverse * power);
+        }).finallyDo(() ->  {
+            reverse *= -1;
+            motorMain.set(reverse * power);
         });
     }
 

@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to each mode, as
@@ -22,6 +25,10 @@ public class Robot extends TimedRobot
   private        Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  private AddressableLED led = new AddressableLED(9);
+  private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(114);
+  private double perd;
+  private final double hertz = 1/60;
 
   private Timer disabledTimer;
 
@@ -49,6 +56,10 @@ public class Robot extends TimedRobot
     // immediately when disabled, but then also let it be pushed more 
     disabledTimer = new Timer();
 
+    led.setLength(ledBuffer.getLength());
+    led.setData(ledBuffer);
+    led.start();
+
     if (isSimulation())
     {
       DriverStation.silenceJoystickConnectionWarning(true);
@@ -70,6 +81,16 @@ public class Robot extends TimedRobot
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    perd += hertz * 100;
+    for(int i = 0; i < ledBuffer.getLength(); i++){
+      ledBuffer.setRGB(i, (int)perd % 255, 122, (i / 2) % 255);
+    }
+    led.setData(ledBuffer);
+    System.out.println("r: ");
+    System.out.print(perd % 255);
+    System.out.print(", g: 122 b: 0 - ");
+    System.out.print(Math.min((ledBuffer.getLength() / 2), 255.0));
   }
 
   /**

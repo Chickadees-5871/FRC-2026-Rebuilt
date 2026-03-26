@@ -6,6 +6,8 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.events.EventTrigger;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -40,7 +42,6 @@ import swervelib.SwerveInputStream;
  */
 public class RobotContainer
 {
-
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
   final         CommandXboxController gunnerXbox = new CommandXboxController(1);
@@ -116,8 +117,15 @@ public class RobotContainer
    */
   public RobotContainer()
   {
-    //liftSubsystem.setDefaultCommand(liftSubsystem.holdDownCommand());
+    
+    //liftSubs))))ystem.setDefaultCommand(liftSubsystem.holdDownCommand());
+    //intakeSubsystem.setDefaultCommand(intakeSubsystem.startCommand());
     //indexingSubsystem.setDefaultCommand(indexingSubsystem.startCommand());
+
+    // Setup triggers
+    new EventTrigger("LowerIntakeCommand").onTrue(intakeSubsystem.extendCommand());
+    new EventTrigger("ShootCommand").onTrue(turretSubsystem.shootForever());
+
     // Configure the trigger bindings
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
@@ -222,12 +230,17 @@ public class RobotContainer
     //
     // GUNNER !!
     //
-    gunnerXbox.leftTrigger(0.5).whileTrue(indexingSubsystem.startCommand()).whileFalse(indexingSubsystem.stopCommand());
-    gunnerXbox.rightTrigger(0.5).whileTrue(intakeSubsystem.startCommand()).whileFalse(intakeSubsystem.stopCommand());
+    gunnerXbox.leftTrigger(0.5).whileTrue(intakeSubsystem.startCommand()).whileFalse(intakeSubsystem.stopCommand());
+    gunnerXbox.rightTrigger(0.2).whileTrue(turretSubsystem.shoot());
+    gunnerXbox.rightTrigger(0.2).whileTrue(indexingSubsystem.startCommand());
+    gunnerXbox.rightTrigger(0.2).whileTrue(intakeSubsystem.startCommand());
+
+    
     gunnerXbox.leftBumper().onTrue(intakeSubsystem.extendCommand());
     
+
     gunnerXbox.a().onTrue(indexingSubsystem.toggleReverseCommand());
-    gunnerXbox.b().onTrue(intakeSubsystem.toggleReverseCommand());
+    gunnerXbox.a().onTrue(intakeSubsystem.toggleReverseCommand());
     gunnerXbox.y().onTrue(liftSubsystem.extendCommand());
     gunnerXbox.x().whileTrue(liftSubsystem.retractCommand());
 

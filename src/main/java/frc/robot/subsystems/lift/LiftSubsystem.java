@@ -29,9 +29,8 @@ public class LiftSubsystem extends SubsystemBase{
     }
 
     public Command extendCommand() {
-        return new RunCommand(() -> motorMain.setVoltage(12), this)
-            .withTimeout(2.0) // Safety: Stop after 2 seconds if no limit switch
-            .finallyDo(() -> motorMain.setVoltage(0));
+        return new RunCommand(() -> motorMain.setVoltage(12.0), this)
+            .finallyDo(() -> motorMain.setVoltage(-0.1)); // Go back to holding tension
     }
 
     public Command retractCommand() {

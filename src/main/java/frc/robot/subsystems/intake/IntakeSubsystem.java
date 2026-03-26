@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,6 +19,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private double power = 0.41;
     private int reverse = 1;
+    private boolean isDown = false;
 
     public IntakeSubsystem() {
         SparkMaxConfig config = new SparkMaxConfig();
@@ -42,20 +44,36 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public Command toggleReverseCommand() {
-        return new InstantCommand(() -> {
-            motorMain.set(0);
+        return new RunCommand(() -> {
+            reverse *= -1;
+            motorMain.set(power * reverse);
+        }).finallyDo(() -> {
             reverse *= -1;
             motorMain.set(power * reverse);
         });
     }
 
-    // TODO: This function
-    public Command  extendCommand() {
+    public Command extendCommand() {
         return new RunCommand(
             () -> {
-                motorExtendOne.set(-0.5);
+                motorExtendOne.set(-0.25);
                 System.out.println("Extending");
             }, this).withTimeout(2.0) 
+            .finallyDo(() -> {
+                isDown = true;
+                motorExtendOne.set(0);
+            });
+    }
+
+    public Command retractCommand() {
+        return new RunCommand(() -> motorExtendOne.set(0.8), this)
             .finallyDo(() -> motorExtendOne.set(0));
+    }
+
+    public void periodic(){
+        if(isDown){
+            Commands.runOnce(() -> startCommand());
+            isDown = false;
+        }
     }
 }
